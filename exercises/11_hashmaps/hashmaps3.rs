@@ -6,7 +6,7 @@
 // number of goals the team scored, and the total number of goals the team
 // conceded.
 
-use std::collections::HashMap;
+use std::{collections::HashMap, ops::DerefMut};
 
 // A structure to store the goal details of a team.
 #[derive(Default)]
@@ -27,10 +27,15 @@ fn build_scores_table(results: &str) -> HashMap<&str, TeamScores> {
         let team_1_score: u8 = split_iterator.next().unwrap().parse().unwrap();
         let team_2_score: u8 = split_iterator.next().unwrap().parse().unwrap();
 
-        // TODO: Populate the scores table with the extracted details.
-        // Keep in mind that goals scored by team 1 will be the number of goals
-        // conceded by team 2. Similarly, goals scored by team 2 will be the
-        // number of goals conceded by team 1.
+        // Ensures a value is in the entry by inserting the default value if empty,
+        // and returns a mutable reference to the value in the entry.
+        let score = scores.entry(team_1_name).or_default();
+        score.goals_conceded += team_2_score;
+        score.goals_scored += team_1_score;
+
+        let score = scores.entry(team_2_name).or_default();
+        score.goals_conceded += team_1_score;
+        score.goals_scored += team_2_score;
     }
 
     scores
@@ -54,9 +59,11 @@ England,Spain,1,0";
     fn build_scores() {
         let scores = build_scores_table(RESULTS);
 
-        assert!(["England", "France", "Germany", "Italy", "Poland", "Spain"]
-            .into_iter()
-            .all(|team_name| scores.contains_key(team_name)));
+        assert!(
+            ["England", "France", "Germany", "Italy", "Poland", "Spain"]
+                .into_iter()
+                .all(|team_name| scores.contains_key(team_name))
+        );
     }
 
     #[test]
