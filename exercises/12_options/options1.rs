@@ -4,6 +4,14 @@
 // `hour_of_day` is higher than 23.
 fn maybe_ice_cream(hour_of_day: u16) -> Option<u16> {
     // TODO: Complete the function body.
+    let mut scoops_left: Option<u16> = Some(5);
+    if hour_of_day >= 22 {
+        scoops_left = Some(5);
+    } else {
+        scoops_left = None;
+    }
+
+    scoops_left
 }
 
 fn main() {
@@ -18,8 +26,11 @@ mod tests {
     fn raw_value() {
         // TODO: Fix this test. How do you get the value contained in the
         // Option?
-        let ice_creams = maybe_ice_cream(12);
-
+        let mut ice_creams: u16 = 0;
+        match maybe_ice_cream(12) {
+            Some(count) => ice_creams = count,
+            _ => (),
+        }
         assert_eq!(ice_creams, 5); // Don't change this line.
     }
 
