@@ -1,3 +1,5 @@
+use std::thread::scope;
+
 // This function returns how much ice cream there is left in the fridge.
 // If it's before 22:00 (24-hour system), then 5 scoops are left. At 22:00,
 // someone eats it all, so no ice cream is left (value 0). Return `None` if
@@ -5,9 +7,12 @@
 fn maybe_ice_cream(hour_of_day: u16) -> Option<u16> {
     // TODO: Complete the function body.
     let mut scoops_left: Option<u16> = Some(5);
-    if hour_of_day >= 22 {
-        scoops_left = Some(5);
-    } else {
+    println!("Hour of Day: {}", hour_of_day);
+    if hour_of_day >= 22 && hour_of_day <= 23 {
+        println!(">={}:{}", 22, 0);
+        scoops_left = Some(0);
+    } else if hour_of_day > 23 {
+        println!(">{}:{}", 23, "None");
         scoops_left = None;
     }
 
@@ -26,11 +31,10 @@ mod tests {
     fn raw_value() {
         // TODO: Fix this test. How do you get the value contained in the
         // Option?
-        let mut ice_creams: u16 = 0;
-        match maybe_ice_cream(12) {
-            Some(count) => ice_creams = count,
-            _ => (),
-        }
+        let mut ice_creams: u16 = match maybe_ice_cream(12) {
+            Some(count) => count,
+            _ => 0,
+        };
         assert_eq!(ice_creams, 5); // Don't change this line.
     }
 
