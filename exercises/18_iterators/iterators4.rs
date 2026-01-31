@@ -10,6 +10,10 @@ fn factorial(num: u64) -> u64 {
     // - additional variables
     // For an extra challenge, don't use:
     // - recursion
+    //
+    //clippy suggestion:
+    // (2..=num).product()
+    (2..=num).fold(1_u64, |accumalator, multiplier| accumalator * multiplier)
 }
 
 fn main() {
