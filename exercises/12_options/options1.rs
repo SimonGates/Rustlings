@@ -9,10 +9,8 @@ fn maybe_ice_cream(hour_of_day: u16) -> Option<u16> {
     let mut scoops_left: Option<u16> = Some(5);
     println!("Hour of Day: {}", hour_of_day);
     if hour_of_day >= 22 && hour_of_day <= 23 {
-        println!(">={}:{}", 22, 0);
         scoops_left = Some(0);
     } else if hour_of_day > 23 {
-        println!(">{}:{}", 23, "None");
         scoops_left = None;
     }
 

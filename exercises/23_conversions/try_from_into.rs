@@ -20,7 +20,7 @@ enum IntoColorError {
     // Incorrect length of slice
     BadLen,
     // Integer conversion error
-    IntConversion,
+    IntConversion(String),
 }
 
 // TODO: Tuple implementation.
@@ -28,14 +28,29 @@ enum IntoColorError {
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
 
-    fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {}
+    fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        let red =
+            u8::try_from(tuple.0).map_err(|_| IntoColorError::IntConversion("Red".to_string()))?;
+        let green = u8::try_from(tuple.1)
+            .map_err(|_| IntoColorError::IntConversion("Green".to_string()))?;
+        let blue =
+            u8::try_from(tuple.2).map_err(|_| IntoColorError::IntConversion("Blue".to_string()))?;
+
+        Ok(Self { red, green, blue })
+    }
 }
 
 // TODO: Array implementation.
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
 
-    fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {}
+    fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        if arr.len() != 3 {
+            return Err(IntoColorError::BadLen);
+        }
+
+        Self::try_from((arr[0], arr[1], arr[2]))
+    }
 }
 
 // TODO: Slice implementation.
@@ -43,7 +58,13 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
 
-    fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {}
+    fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        if slice.len() != 3 {
+            return Err(IntoColorError::BadLen);
+        }
+
+        Self::try_from((slice[0], slice[1], slice[2]))
+    }
 }
 
 fn main() {
@@ -71,17 +92,26 @@ mod tests {
 
     #[test]
     fn test_tuple_out_of_range_positive() {
-        assert_eq!(Color::try_from((256, 1000, 10000)), Err(IntConversion));
+        assert_eq!(
+            Color::try_from((256, 1000, 10000)),
+            Err(IntConversion("Red".to_string())) // Error will be the first to fail
+        );
     }
 
     #[test]
     fn test_tuple_out_of_range_negative() {
-        assert_eq!(Color::try_from((-1, -10, -256)), Err(IntConversion));
+        assert_eq!(
+            Color::try_from((-1, -10, -256)),
+            Err(IntConversion("Red".to_string()))
+        );
     }
 
     #[test]
     fn test_tuple_sum() {
-        assert_eq!(Color::try_from((-1, 255, 255)), Err(IntConversion));
+        assert_eq!(
+            Color::try_from((-1, 255, 255)),
+            Err(IntConversion("Red".to_string()))
+        );
     }
 
     #[test]
@@ -101,19 +131,19 @@ mod tests {
     #[test]
     fn test_array_out_of_range_positive() {
         let c: Result<Color, _> = [1000, 10000, 256].try_into();
-        assert_eq!(c, Err(IntConversion));
+        assert_eq!(c, Err(IntConversion("Red".to_string())));
     }
 
     #[test]
     fn test_array_out_of_range_negative() {
         let c: Result<Color, _> = [-10, -256, -1].try_into();
-        assert_eq!(c, Err(IntConversion));
+        assert_eq!(c, Err(IntConversion("Red".to_string())));
     }
 
     #[test]
     fn test_array_sum() {
         let c: Result<Color, _> = [-1, 255, 255].try_into();
-        assert_eq!(c, Err(IntConversion));
+        assert_eq!(c, Err(IntConversion("Red".to_string())));
     }
 
     #[test]
@@ -133,19 +163,28 @@ mod tests {
     #[test]
     fn test_slice_out_of_range_positive() {
         let arr = [10000, 256, 1000];
-        assert_eq!(Color::try_from(&arr[..]), Err(IntConversion));
+        assert_eq!(
+            Color::try_from(&arr[..]),
+            Err(IntConversion("Red".to_string()))
+        );
     }
 
     #[test]
     fn test_slice_out_of_range_negative() {
         let arr = [-256, -1, -10];
-        assert_eq!(Color::try_from(&arr[..]), Err(IntConversion));
+        assert_eq!(
+            Color::try_from(&arr[..]),
+            Err(IntConversion("Red".to_string()))
+        );
     }
 
     #[test]
     fn test_slice_sum() {
         let arr = [-1, 255, 255];
-        assert_eq!(Color::try_from(&arr[..]), Err(IntConversion));
+        assert_eq!(
+            Color::try_from(&arr[..]),
+            Err(IntConversion("Red".to_string()))
+        );
     }
 
     #[test]

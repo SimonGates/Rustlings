@@ -34,13 +34,13 @@ mod my_module {
             .into_iter()
             .map(|(input, cmd)| {
                 println!("item: {}", input);
-                let new_input: String = match cmd {
+                let output: String = match cmd {
                     Command::Uppercase => input.to_uppercase(),
                     Command::Trim => String::from(input.trim()),
                     Command::Append(count) => format!("{}{}", input, "bar".repeat(count)),
                 };
-                println!("updated item: {}", new_input);
-                new_input
+                println!("updated item: {}", output);
+                output
             })
             .collect()
     }
